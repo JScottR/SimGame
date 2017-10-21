@@ -18,6 +18,7 @@ def play(color, avaliableMoves, redMoves, blueMoves,human):
         vertice = input("Choose the first vertice: ")
         vertice2 = input("Choose the secound vertice: ")
         playerMove = [vertice,vertice2]
+        playerMove.sort()
     else:
         playerMove = random.choice(avaliableMoves)
     ## Remove move from avaliable
