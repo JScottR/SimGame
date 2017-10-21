@@ -22,7 +22,7 @@ def play(color, avaliableMoves, redMoves, blueMoves,human):
         playerMove = random.choice(avaliableMoves)
     ## Remove move from avaliable
     avaliableMoves.remove(playerMove)
-    printOut = repr(color) +' Moves: ' + repr(move)
+    printOut = repr(color) +' Moves: ' + repr(playerMove)
     print(printOut)
     ##add move to colors moves
     if(color == 'red'):
@@ -38,10 +38,47 @@ def play(color, avaliableMoves, redMoves, blueMoves,human):
         finish = repr(color) + 'is the winner'
     else:
         if(color == 'red'):
-            play('blue',avaliableMoves,redMoves,blueMoves,human)
+            if not findLoop(redMoves):
+                play('blue',avaliableMoves,redMoves,blueMoves,human)
+            else:
+                print("Blue Wins!")
         else:
-            play("red",avaliableMoves,redMoves,blueMoves,human)
+            if not findLoop(blueMoves):
+                play("red",avaliableMoves,redMoves,blueMoves,human)
+            else:
+                print("Red Wins")
 
+
+
+def findLoop(moves):
+    for edge in moves:
+        print(edge)
+        list1 = []
+        list2 = []
+        firstVert = edge[0]
+        secondVert = edge[1]
+        for items in moves:
+            if firstVert in items and secondVert not in items:
+                list1.append(items)
+        ## print("Made List 1")
+        ## print(list1)
+        if(len(list1) != 0):
+            for sublist in list1:
+                if sublist[0] != firstVert:
+                    list2.append(sublist[0])
+                else:
+                    list2.append(sublist[1])
+            ## print(list2)
+            for newVerts in list2:
+                newList = [secondVert, newVerts]
+                newList.sort()
+                ## print("New list")
+                ## print(newList)
+                if newList in moves:
+                    ## print("returningTrue")
+                    return True
+    ## print("returningFalse")
+    return False
 ## Initlize Game
 
 def initializeGame():
