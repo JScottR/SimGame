@@ -8,9 +8,53 @@ blueMoves = []
 human = ''
 
 
+## PsudeoMiniMaxAlgorithm
+
+
+def pseudoMiniMax(color, avaliableMoves, redMoves, blueMoves,human):
+    if(color == 'red'):
+        if findLoop(redMoves):
+            if(color == human):
+                return(-10,[])
+            else:
+                return(10,[])
+    else:
+        if findLoop(blueMoves):
+            if(color == human):
+                return(-10,[])
+            else:
+                return(10,[])
+    currentBest = 0
+    bestMove = []
+    for possibleMoves in avaliableMoves:
+        newAvaliable = list(avaliableMoves)
+        newAvaliable.remove(possibleMoves)
+        if(color == 'red'):
+            newColor = list(redMoves)
+            newColor.append(possibleMoves)
+            retVal, retMove = pseudoMiniMax("blue",newAvaliable,newColor,blueMoves,human)
+        else:
+            newColor = list(blueMoves)
+            newColor.append(possibleMoves)
+            retVal, retMove = pseudoMiniMax("red",newAvaliable,redMoves,newColor,human)
+        if(color==human):
+            if(retVal < currentBest):
+                currentBest = retVal
+                bestMove = list(possibleMoves)
+        else:
+            if(retVal == 10):
+                return(10,possibleMoves)
+            elif(retVal > currentBest):
+                currentBest = retVal
+                bestMove = list(possibleMoves)
+    return(currentBest,bestMove)
+
+
+
+
 ## Play Games
 
-def play(color, avaliableMoves, redMoves, blueMoves,human):
+def play(color, avaliableMoves, redMoves, blueMoves,human,moves):
     ##Ask for move
     print(color)
     print(avaliableMoves)
@@ -20,10 +64,27 @@ def play(color, avaliableMoves, redMoves, blueMoves,human):
         playerMove = [vertice,vertice2]
         playerMove.sort()
     else:
-        playerMove = random.choice(avaliableMoves)
+        if moves <= 20:
+            while True:
+                playerMove = random.choice(avaliableMoves)
+                if(color == 'red'):
+                    tmpColor = list(redMoves)
+                else:
+                    tmpColor = list(blueMoves)
+                tmpColor.append(playerMove)
+                if not findLoop(tmpColor):
+                    break
+        else:
+            print("entering AI")
+            bestValue, bestMove = pseudoMiniMax(color,avaliableMoves,redMoves,blueMoves,human)
+            print("Best Val")
+            print(bestValue)
+            print(bestMove)
+            playerMove = bestMove
     ## Remove move from avaliable
     avaliableMoves.remove(playerMove)
     printOut = repr(color) +' Moves: ' + repr(playerMove)
+    moves += 1
     print(printOut)
     ##add move to colors moves
     if(color == 'red'):
@@ -40,12 +101,12 @@ def play(color, avaliableMoves, redMoves, blueMoves,human):
     else:
         if(color == 'red'):
             if not findLoop(redMoves):
-                play('blue',avaliableMoves,redMoves,blueMoves,human)
+                play('blue',avaliableMoves,redMoves,blueMoves,human,moves)
             else:
                 print("Blue Wins!")
         else:
             if not findLoop(blueMoves):
-                play("red",avaliableMoves,redMoves,blueMoves,human)
+                play("red",avaliableMoves,redMoves,blueMoves,human,moves)
             else:
                 print("Red Wins")
 
@@ -53,7 +114,6 @@ def play(color, avaliableMoves, redMoves, blueMoves,human):
 
 def findLoop(moves):
     for edge in moves:
-        print(edge)
         list1 = []
         list2 = []
         firstVert = edge[0]
@@ -86,7 +146,7 @@ def initializeGame():
     var = input("Play Red or Blue: ")
     if(var == "Red" or var == "r" or var == "red"):
         human = "red"
-        play("red",avaliableMoves,redMoves,blueMoves,human)
+        play("red",avaliableMoves,redMoves,blueMoves,human,0)
     else:
         human = "blue"
         move = random.choice(avaliableMoves)
@@ -95,7 +155,7 @@ def initializeGame():
         redMoves.append(move)
         printOut = 'Red Moves: ' + repr(move)
         print(printOut)
-        play("blue",avaliableMoves,redMoves,blueMoves,human)
+        play("blue",avaliableMoves,redMoves,blueMoves,human,1)
 
 initializeGame()
 
