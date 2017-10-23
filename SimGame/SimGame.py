@@ -15,17 +15,20 @@ def pseudoMiniMax(color, avaliableMoves, redMoves, blueMoves,human):
     if(color == 'red'):
         if findLoop(redMoves):
             if(color == human):
-                return(-10,[])
-            else:
                 return(10,[])
+            else:
+                return(-10,[])
     else:
         if findLoop(blueMoves):
             if(color == human):
-                return(-10,[])
-            else:
                 return(10,[])
-    currentBest = 0
-    bestMove = []
+            else:
+                return(-10,[])
+    if(color == human):
+        currentBest = 100
+    else:
+        currentBest = -100
+    bestMove = random.choice(avaliableMoves)
     for possibleMoves in avaliableMoves:
         newAvaliable = list(avaliableMoves)
         newAvaliable.remove(possibleMoves)
@@ -64,7 +67,7 @@ def play(color, avaliableMoves, redMoves, blueMoves,human,moves):
         playerMove = [vertice,vertice2]
         playerMove.sort()
     else:
-        if moves <= 20:
+        if moves <= 15:
             while True:
                 playerMove = random.choice(avaliableMoves)
                 if(color == 'red'):
@@ -81,6 +84,9 @@ def play(color, avaliableMoves, redMoves, blueMoves,human,moves):
             print(bestValue)
             print(bestMove)
             playerMove = bestMove
+            if (bestMove == []):
+                playerMove = random.choice(avaliableMoves)
+
     ## Remove move from avaliable
     avaliableMoves.remove(playerMove)
     printOut = repr(color) +' Moves: ' + repr(playerMove)
